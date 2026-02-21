@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
-
 import pdfplumber
 from botocore.exceptions import BotoCoreError, ClientError
 
@@ -62,7 +61,7 @@ def run_batch() -> None:
 
     pdf_keys = store.list_pdf_keys(pdf_prefix=s.pdf_prefix, extracted_prefix=s.out_prefix)
     if not pdf_keys:
-        logger.warning("No PDFs found under prefix=%r in bucket=%r", s.pdf_prefix, store.bucket)
+        logger.warning("No new PDFs found under prefix=%r in bucket=%r", s.pdf_prefix, store.bucket)
         return
 
     logger.info("Found %d PDFs under prefix=%r", len(pdf_keys), s.pdf_prefix)
