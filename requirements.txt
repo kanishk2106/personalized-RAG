@@ -1,0 +1,7 @@
+boto3
+botocore
+pdfplumber
+pypdfium2
+pillow
+pytesseract
+python-dotenv
