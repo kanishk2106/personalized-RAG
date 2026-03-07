@@ -122,7 +122,7 @@ def run_batch_pipeline(store: R2Store, s: Settings):
         logger.info(f"--- Batch {batch_num} done. Local cleaned up. ---")
 
     logger.info("=" * 50)
-    logger.info(f"PIPELINE COMPLETE")
+    logger.info("PIPELINE COMPLETE")
     logger.info(f"  Files Processed: {total_files}")
     logger.info(f"  Pages Cleaned:   {total_pages}")
     logger.info(f"  Batches:         {batch_num}")

@@ -1,4 +1,4 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from pdf_extractor.extract import extract_text_with_fallback, ExtractionResult
 
 def test_extract_text_with_fallback_success():

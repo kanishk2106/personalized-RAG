@@ -1,7 +1,6 @@
 import os
 import json
 import logging
-import io
 import boto3
 from pinecone import Pinecone
 from sentence_transformers import SentenceTransformer
@@ -48,7 +47,8 @@ def run_ingestor_production():
 
     for obj in objects:
         file_key = obj['Key']
-        if not file_key.endswith('.json'): continue
+        if not file_key.endswith('.json'):
+            continue
 
         # Load from Cloud
         file_obj = s3_client.get_object(Bucket=S3_BUCKET, Key=file_key)

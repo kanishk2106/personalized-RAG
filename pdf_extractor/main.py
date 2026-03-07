@@ -1,11 +1,10 @@
 import logging
 import os
-from fastapi import FastAPI, BackgroundTasks, Request, HTTPException
+from fastapi import FastAPI, BackgroundTasks, HTTPException
 from pdf_extractor.pipeline import run_batch 
 from pydantic import BaseModel
 from typing import Optional
 import uvicorn
-import sys
 
 
 app = FastAPI()

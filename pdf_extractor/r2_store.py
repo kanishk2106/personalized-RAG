@@ -7,7 +7,6 @@ from botocore.config import Config
 from botocore.exceptions import ClientError
 from .settings import Settings
 import logging
-import sys
 logger = logging.getLogger(__name__)
 class ObjectNotFound(Exception):
     pass
