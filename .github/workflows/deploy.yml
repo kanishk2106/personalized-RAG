@@ -1,0 +1,56 @@
+name: Deploy Image to Docker Hub
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to publish"
+        required: true
+        default: "latest"
+
+permissions:
+  contents: read
+
+jobs:
+  push-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest
+
+      - name: Run tests
+        run: |
+          PYTHONPATH=. pytest tests/
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./pdf_extractor/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/rag_pdf_extraction:${{ inputs.image_tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/rag_pdf_extraction:sha-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
