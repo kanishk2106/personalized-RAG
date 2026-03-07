@@ -55,17 +55,18 @@ def process_one_pdf(store: R2Store, s: Settings, pdf_key: str) -> None:
     )
 
 
-def run_batch() -> None:
+def run_batch(filename: str = None) -> None:
     s = Settings.from_env()
     store = R2Store(s)
-
-    pdf_keys = store.list_pdf_keys(pdf_prefix=s.pdf_prefix, extracted_prefix=s.out_prefix)
+    if filename:
+        logger.info("Targeted run triggered for specific file: %s", filename)
+        pdf_keys = [filename]
+    else:
+        logger.info("No filename provided. Scanning bucket for new PDFs...")
+        pdf_keys = store.list_pdf_keys(pdf_prefix=s.pdf_prefix, extracted_prefix=s.out_prefix)
     if not pdf_keys:
         logger.warning("No new PDFs found under prefix=%r in bucket=%r", s.pdf_prefix, store.bucket)
         return
-
-    logger.info("Found %d PDFs under prefix=%r", len(pdf_keys), s.pdf_prefix)
-
     for k in pdf_keys:
         try:
             process_one_pdf(store, s, k)

@@ -1,14 +1,16 @@
 from __future__ import annotations
-
 import json
 from typing import Any, Dict, List, Optional
 import os
 import boto3
 from botocore.config import Config
-
+from botocore.exceptions import ClientError
 from .settings import Settings
-
-
+import logging
+import sys
+logger = logging.getLogger(__name__)
+class ObjectNotFound(Exception):
+    pass
 class R2Store:
     def __init__(self, s: Settings):
         endpoint_url = f"https://{s.r2_account_id}.r2.cloudflarestorage.com"
@@ -68,7 +70,17 @@ class R2Store:
         return keys
 
     def head(self, key: str) -> Dict[str, Any]:
-        return self.s3.head_object(Bucket=self.bucket, Key=key)
+        try:
+            resp = self.s3.head_object(Bucket=self.bucket, Key=key)
+            return resp
+        except ClientError as e:
+            err = e.response.get("Error", {})
+            code = err.get("Code", "Unknown")
+            msg = err.get("Message", str(e))
+            logger.error("HEAD failed for key=%s bucket=%s | Code=%s | Message=%s", key, self.bucket, code, msg)
+            if code in ("404", "NoSuchKey", "NotFound"):
+                raise ObjectNotFound(f"Object not found: {key}")
+            raise
 
     def get_bytes(self, key: str) -> bytes:
         obj = self.s3.get_object(Bucket=self.bucket, Key=key)

@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 import pdfplumber
 import pypdfium2 as pdfium
 import pytesseract
-
+import logging
 logger = logging.getLogger(__name__)
 
 

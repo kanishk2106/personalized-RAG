@@ -3,7 +3,9 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import logging
 
+logger = logging.getLogger(__name__)
 
 def get_env(name: str) -> str:
     v = os.getenv(name)

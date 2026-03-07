@@ -6,7 +6,9 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from .settings import iso_z
+import logging
 
+logger = logging.getLogger(__name__)
 
 def parse_doc_meta_from_basename(pdf_basename: str) -> Dict[str, Any]:
     base = os.path.splitext(pdf_basename)[0]

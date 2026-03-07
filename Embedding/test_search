@@ -1,0 +1,58 @@
+import os
+import logging
+from pinecone import Pinecone
+from sentence_transformers import SentenceTransformer
+
+# Inherit logging from main.py
+logger = logging.getLogger(__name__)
+
+def run_test_search(query: str, top_k: int = 3):
+    """Verifies Pinecone retrieval by searching for a specific query."""
+    
+    # 1. Load Local Model (The 'Brain')
+    model_path = os.path.join(os.getcwd(), "models", "all-MiniLM-L6-v2")
+    if not os.path.exists(model_path):
+        logger.error("❌ Local model not found. Please run the Ingestor first.")
+        return
+
+    model = SentenceTransformer(model_path)
+    
+    # 2. Setup Pinecone
+    pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+    index = pc.Index(os.getenv("PINECONE_INDEX_NAME"))
+    
+    # 3. Embed the query
+    logger.info(f"🔍 Searching for: '{query}'")
+    query_vector = model.encode(query).tolist()
+    
+    # 4. Search the 'portfolio' namespace
+    results = index.query(
+        namespace="portfolio",
+        vector=query_vector,
+        top_k=top_k,
+        include_metadata=True
+    )
+    
+    # 5. Display Results
+    if not results['matches']:
+        logger.warning("⚠️ No matches found. Check your namespace and ingestor.")
+        return
+
+    logger.info("-" * 50)
+    for i, match in enumerate(results['matches']):
+        meta = match['metadata']
+        print(f"\n[Result {i+1}] Score: {match['score']:.4f}")
+        print(f"Source: {meta['title']} (Page {int(meta['page'])})")
+        print(f"Type: {meta['doc_type']} | Course: {meta['course']}")
+        print(f"Content: {meta['text'][:200]}...") 
+    logger.info("-" * 50)
+
+if __name__ == "__main__":
+    # For standalone testing
+    from dotenv import load_dotenv
+    load_dotenv()
+    logging.basicConfig(level=logging.INFO)
+    
+    # Try a query like "What is the rank r in LoRA?" or "Where did Kanishk study?"
+    user_query = "What is the rank r in LoRA?"
+    run_test_search(user_query)

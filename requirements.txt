@@ -5,3 +5,6 @@ pypdfium2
 pillow
 pytesseract
 python-dotenv
+fastapi
+uvicorn[standard]
+python-multipart

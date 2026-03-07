@@ -1,0 +1,11 @@
+*.pyc
+venv
+.env
+.git
+.github
+__pycache__/
+*.pdf
+*.json
+.DS_Store
+.ragvenv
+data/
