@@ -1,0 +1,94 @@
+name: Terraform
+
+on:
+  pull_request:
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-prod
+  cancel-in-progress: false
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    env:
+      TF_IN_AUTOMATION: true
+
+      TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
+      TF_VAR_region: ${{ vars.GCP_REGION }}
+      TF_VAR_service_name: ${{ vars.CLOUD_RUN_SERVICE_NAME }}
+      TF_VAR_service_account_email: ${{ vars.CLOUD_RUN_SERVICE_ACCOUNT }}
+      TF_VAR_image_url: ${{ vars.IMAGE_URL }}
+      TF_VAR_container_port: ${{ vars.CONTAINER_PORT }}
+      TF_VAR_timeout_seconds: ${{ vars.TIMEOUT_SECONDS }}
+      TF_VAR_cpu_limit: ${{ vars.CPU_LIMIT }}
+      TF_VAR_memory_limit: ${{ vars.MEMORY_LIMIT }}
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      TF_VAR_r2_bucket_name: ${{ vars.R2_BUCKET_NAME }}
+      TF_VAR_queue_name: ${{ vars.QUEUE_NAME }}
+      TF_VAR_r2_pdf_prefix: ${{ vars.R2_PDF_PREFIX }}
+      TF_VAR_r2_extract_prefix: ${{ vars.R2_EXTRACT_PREFIX }}
+      TF_VAR_min_text_chars_per_page: ${{ vars.MIN_TEXT_CHARS_PER_PAGE }}
+      TF_VAR_ocr_dpi: ${{ vars.OCR_DPI }}
+      TF_VAR_ocr_lang: ${{ vars.OCR_LANG }}
+      TF_VAR_language_hint: ${{ vars.LANGUAGE_HINT }}
+      TF_VAR_log_level: ${{ vars.LOG_LEVEL }}
+
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_TERRAFORM_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Check remote state access
+        run: |
+          if terraform state pull >/dev/null 2>&1; then
+            echo "Remote GCS state is accessible."
+            terraform state list || true
+          else
+            echo "Remote state not readable yet. This can happen on the first run or if the backend is empty."
+          fi
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -input=false -no-color
+
+      - name: Terraform Apply
+        if: github.event_name != 'pull_request'
+        run: terraform apply -auto-approve -input=false
