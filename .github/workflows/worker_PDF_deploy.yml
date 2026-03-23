@@ -1,4 +1,4 @@
-name: Deploy Cloudflare Worker
+name: Deploy PDF Event Worker
 
 on:
   push:
@@ -12,36 +12,33 @@ on:
 jobs:
   deploy-worker:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check Wrangler auth
-        id: whoami
-        uses: cloudflare/wrangler-action@v3
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: "PDF_event"
-          wranglerVersion: "4"
-          command: whoami
+          node-version: 20
+
+      - name: Install Wrangler
+        run: npm install -g wrangler@4
+
+      - name: Show Wrangler version
+        run: wrangler --version
+
+      - name: Check Cloudflare auth
+        working-directory: ./PDF_event
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: wrangler whoami
 
       - name: Deploy Worker
-        id: deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: "PDF_event"
-          wranglerVersion: "4"
-          command: deploy
-
-      - name: Print deploy stdout
-        if: always()
-        run: echo '${{ steps.deploy.outputs.command-output }}'
-
-      - name: Print deploy stderr
-        if: always()
-        run: echo '${{ steps.deploy.outputs.command-stderr }}'
+        working-directory: ./PDF_event
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: wrangler deploy
