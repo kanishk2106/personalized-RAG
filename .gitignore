@@ -8,4 +8,5 @@ __pycache__/
 *.tfstate
 *.tfstate.*
 *.tfvars
+*.ragvenv
 crash.log
