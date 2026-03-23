@@ -1,0 +1,18 @@
+{
+    "name": "pdf-dispatcher",
+    "main": "src/index.js",
+    "compatibility_date": "2026-03-11",
+    "queues": {
+        "consumers": [
+            {
+                "queue": "pdf-jobs",
+                "max_batch_size": 1,
+                "max_batch_timeout": 5,
+                "max_retries": 3
+            }
+        ]
+    },
+    "vars": {
+        "PROCESSOR_URL": "https://pdf-processor-jz3pif73qa-uc.a.run.app/"
+    }
+}
