@@ -12,10 +12,21 @@ on:
 jobs:
   deploy-worker:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Check Wrangler auth
+        id: whoami
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: "PDF_event"
+          wranglerVersion: "4"
+          command: whoami
 
       - name: Deploy Worker
         id: deploy
@@ -26,3 +37,11 @@ jobs:
           workingDirectory: "PDF_event"
           wranglerVersion: "4"
           command: deploy
+
+      - name: Print deploy stdout
+        if: always()
+        run: echo '${{ steps.deploy.outputs.command-output }}'
+
+      - name: Print deploy stderr
+        if: always()
+        run: echo '${{ steps.deploy.outputs.command-stderr }}'
