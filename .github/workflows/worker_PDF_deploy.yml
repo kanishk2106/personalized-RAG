@@ -24,12 +24,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: "PDF_event"
+          wranglerVersion: "4"
           command: deploy
-
-      - name: Print Wrangler stdout
-        if: always()
-        run: echo "${{ steps.deploy.outputs.command-output }}"
-
-      - name: Print Wrangler stderr
-        if: always()
-        run: echo "${{ steps.deploy.outputs.command-stderr }}"
