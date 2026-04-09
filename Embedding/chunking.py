@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import logging
 import re
-import unicodedata
 from dataclasses import dataclass
 from hashlib import md5
 from wordsegment import load as ws_load, segment as ws_segment
