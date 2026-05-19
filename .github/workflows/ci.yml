@@ -63,3 +63,32 @@ jobs:
           sleep 10
           docker logs rag_pdf_test --tail=100 || true
           docker rm -f rag_pdf_test || true
+
+  docker-build-embedding:
+    runs-on: ubuntu-latest
+    needs: lint-test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Embedding Docker image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Embedding/Dockerfile
+          push: false
+          tags: local/rag_embedding:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test Embedding container starts
+        run: |
+          docker build -f ./Embedding/Dockerfile -t local/rag_embedding:ci .
+          docker run -d --name rag_embed_test -p 8001:8080 local/rag_embedding:ci
+          sleep 10
+          docker logs rag_embed_test --tail=100 || true
+          docker rm -f rag_embed_test || true

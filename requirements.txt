@@ -8,3 +8,14 @@ python-dotenv
 fastapi
 uvicorn[standard]
 python-multipart
+langchain-text-splitters==0.0.1
+transformers==4.38.2
+onnxruntime==1.17.1
+pinecone-client==3.1.0
+numpy==1.26.4
+sentence-transformers
+torch
+sqlalchemy
+psycopg[binary]
+wordsegment
+tqdm
