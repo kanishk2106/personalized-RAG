@@ -10,3 +10,4 @@ __pycache__/
 *.tfvars
 *.ragvenv
 crash.log
+Embedding/model/
