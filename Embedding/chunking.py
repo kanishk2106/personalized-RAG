@@ -1,19 +1,9 @@
 from __future__ import annotations
 
-import json
 import logging
-import os
 import re
 from dataclasses import dataclass
-from datetime import datetime
 from hashlib import md5
-
-from dotenv import load_dotenv
-
-from wordsegment import load as ws_load, segment as ws_segment
-
-from pdf_extractor.r2_store import R2Store
-from pdf_extractor.settings import Settings
 
 from .cleaning import clean_page_text, detect_repeating_headers
 
