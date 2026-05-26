@@ -50,8 +50,9 @@ jobs:
       TF_VAR_ocr_lang: ${{ vars.OCR_LANG }}
       TF_VAR_language_hint: ${{ vars.LANGUAGE_HINT }}
       TF_VAR_log_level: ${{ vars.LOG_LEVEL }}
-
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_embedding_image_url: ${{ vars.EMBEDDING_IMAGE_URL }}
+      TF_VAR_pinecone_index: ${{ vars.PINECONE_INDEX }}
 
     steps:
       - name: Checkout

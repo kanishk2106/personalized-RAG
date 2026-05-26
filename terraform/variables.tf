@@ -88,3 +88,10 @@ variable "log_level" {
   type    = string
   default = "INFO"
 }
+variable "embedding_image_url" {
+  type = string
+}
+variable "pinecone_index" {
+  type    = string
+  default = "rag"
+}

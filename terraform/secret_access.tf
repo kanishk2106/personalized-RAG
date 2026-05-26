@@ -9,3 +9,14 @@ resource "google_secret_manager_secret_iam_member" "r2_secret_access_key_reader"
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${var.service_account_email}"
 }
+resource "google_secret_manager_secret_iam_member" "database_url_reader" {
+  secret_id = "projects/${var.project_id}/secrets/database-url"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.service_account_email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "pinecone_api_key_reader" {
+  secret_id = "projects/${var.project_id}/secrets/pinecone-api-key"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.service_account_email}"
+}
