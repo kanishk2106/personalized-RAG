@@ -18,3 +18,19 @@ resource "cloudflare_r2_bucket_event_notification" "pdf_trigger" {
     prefix  = var.r2_pdf_prefix
   }]
 }
+
+resource "cloudflare_queue" "embedding_jobs" {
+  account_id = var.cloudflare_account_id
+  queue_name = var.embedding_queue_name
+}
+
+resource "cloudflare_r2_bucket_event_notification" "embedding_trigger" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.rag_data.name
+  queue_id    = cloudflare_queue.embedding_jobs.id
+
+  rules = [{
+    actions = ["PutObject"]
+    prefix  = var.r2_extract_prefix
+  }]
+}

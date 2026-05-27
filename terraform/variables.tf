@@ -54,6 +54,11 @@ variable "queue_name" {
   default = "pdf-jobs"
 }
 
+variable "embedding_queue_name" {
+  type    = string
+  default = "embedding-jobs"
+}
+
 variable "r2_pdf_prefix" {
   type    = string
   default = "Advanced NLP/"
