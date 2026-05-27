@@ -1,0 +1,18 @@
+{
+    "name": "embedding-dispatcher",
+    "main": "src/index.js",
+    "compatibility_date": "2026-03-11",
+    "queues": {
+        "consumers": [
+            {
+                "queue": "embedding-jobs",
+                "max_batch_size": 1,
+                "max_batch_timeout": 5,
+                "max_retries": 3
+            }
+        ]
+    },
+    "vars": {
+        "PROCESSOR_URL": "https://embedding-service-18234107306.us-central1.run.app/"
+    }
+}
