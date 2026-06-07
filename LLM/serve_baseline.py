@@ -71,7 +71,6 @@ def serve():
         TextIteratorStreamer,
     )
 
-    t0 = time.time()
     tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_DIR,
