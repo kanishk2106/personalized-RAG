@@ -142,7 +142,7 @@ async def run_phase(
 
     async with httpx.AsyncClient(timeout=timeout, limits=limits) as client:
         if warmup > 0:
-            print(f"Warmup", flush=True)
+            print("Warmup", flush=True)
             for i in range(warmup):
                 await one_request(
                     client, base_url, model,

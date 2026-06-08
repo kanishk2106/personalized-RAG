@@ -1,4 +1,6 @@
-import json, sys, os
+import json
+import sys
+import os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -24,7 +26,9 @@ def line_chart(key, title, fname):
     y = [r.get(key, 0) or 0 for r in rows]
     plt.figure(figsize=(9, 4))
     plt.plot(t, y, marker=".")
-    plt.title(f"{title}  (peak={max(y):g})"); plt.xlabel("seconds"); plt.grid(alpha=.3)
+    plt.title(f"{title}  (peak={max(y):g})")
+    plt.xlabel("seconds")
+    plt.grid(alpha=.3)
     plt.tight_layout()
     plt.savefig(os.path.join(outdir, fname), dpi=120)
     plt.close()

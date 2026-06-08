@@ -1,5 +1,8 @@
 
-import json, sys, os, re
+import json
+import sys
+import os
+import re
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -37,7 +40,9 @@ def line_chart(base, title):
     y = [get(s["samples"], base) for s in snaps]
     plt.figure(figsize=(9, 4))
     plt.plot(t, y, marker=".")
-    plt.title(title); plt.xlabel("seconds"); plt.grid(alpha=.3)
+    plt.title(title)
+    plt.xlabel("seconds")
+    plt.grid(alpha=.3)
     save(base.split(":")[-1])
 
 def histogram(base, title):
@@ -49,15 +54,20 @@ def histogram(base, title):
             buckets[m.group(1)] = v
     if not buckets:
         return
-    le = lambda x: float("inf") if x in ("+Inf", "Inf") else float(x)
+    def le(x):
+        return float("inf") if x in ("+Inf", "Inf") else float(x)
     items = sorted(buckets.items(), key=lambda kv: le(kv[0]))
     edges, counts, prev = [], [], 0.0
     for e, cum in items:          
-        counts.append(cum - prev); edges.append(e); prev = cum
+        counts.append(cum - prev)
+        edges.append(e)
+        prev = cum
     plt.figure(figsize=(9, 4))
     plt.bar(range(len(edges)), counts, color="tab:orange")
     plt.xticks(range(len(edges)), edges, rotation=45, ha="right", fontsize=7)
-    plt.title(title); plt.xlabel("bucket upper bound"); plt.ylabel("count")
+    plt.title(title)
+    plt.xlabel("bucket upper bound")
+    plt.ylabel("count")
     plt.grid(axis="y", alpha=.3)
     save(base.split(":")[-1])
 
@@ -71,7 +81,8 @@ def reason_bar():
         return
     plt.figure(figsize=(6, 4))
     plt.bar(reasons, counts, color="tab:green")
-    plt.title("Requests by finish reason"); plt.grid(axis="y", alpha=.3)
+    plt.title("Requests by finish reason")
+    plt.grid(axis="y", alpha=.3)
     save("request_success_by_reason")
 
 line_chart("vllm:num_requests_running",      "Requests running (higher under load = batching)")
