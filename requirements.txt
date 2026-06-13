@@ -19,3 +19,5 @@ sqlalchemy
 psycopg[binary]
 wordsegment
 tqdm
+httpx
+asyncpg
