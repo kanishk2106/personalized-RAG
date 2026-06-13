@@ -2,8 +2,8 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements-rag.txt .
-RUN pip install --no-cache-dir -r requirements-rag.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('Snowflake/snowflake-arctic-embed-s')"
 ENV EMBEDDING_MODEL_PATH=Snowflake/snowflake-arctic-embed-s
