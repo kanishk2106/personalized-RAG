@@ -2,25 +2,28 @@
 from __future__ import annotations
 
 import os
-import re
 from contextlib import asynccontextmanager
+
 from dotenv import load_dotenv
-load_dotenv()
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pinecone import Pinecone
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-DATABASE_URL = os.getenv("DATABASE_URL")
-PINECONE_API_KEY = os.environ["PINECONE_API_KEY"]
-PINECONE_INDEX = os.getenv("PINECONE_INDEX", "rag")
-RETRIEVE_K = int(os.environ.get("RETRIEVE_K", "20"))
-RERANK_TOP_N = int(os.environ.get("RERANK_TOP_N", "2"))
+
 from .embeddings import embed_query
 from .generation import aclose_client, stream_chat
 from .prompt import SYSTEM_PROMPT, build_user_message
 from .reranking import rerank
 from .retrieval import Candidate, hybrid_retrieve
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+PINECONE_API_KEY = os.environ["PINECONE_API_KEY"]
+PINECONE_INDEX = os.getenv("PINECONE_INDEX", "rag")
+RETRIEVE_K = int(os.environ.get("RETRIEVE_K", "20"))
+RERANK_TOP_N = int(os.environ.get("RERANK_TOP_N", "2"))
 
 
 _engine = create_async_engine(DATABASE_URL, pool_pre_ping=True)

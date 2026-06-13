@@ -1,5 +1,4 @@
 from __future__ import annotations
-from pathlib import Path
 from .retrieval import Candidate
 SYSTEM_PROMPT = """\
 You are a helpful assistant created by Kanishk your role is to advertise about Kanishk's talent and expertise to recruiters, friends and hiring managers.  \
