@@ -241,6 +241,7 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
   template {
     service_account = var.service_account_email
     timeout         = "${var.timeout_seconds}s"
+
     containers {
       image = var.rag_image_url
 
@@ -274,7 +275,8 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
           }
         }
       }
-       env {
+
+      env {
         name = "Modal_Token_ID"
         value_source {
           secret_key_ref {
@@ -283,6 +285,7 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
           }
         }
       }
+
       env {
         name = "Modal_Token_Secret"
         value_source {
@@ -292,6 +295,7 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
           }
         }
       }
+
       env {
         name = "PINECONE_API_KEY"
         value_source {
@@ -324,9 +328,10 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
     google_project_service.secretmanager_api
   ]
 }
+
 resource "google_service_account" "rag_invoker" {
   account_id   = "rag-invoker"
-  display_name = " RAG Service Invoker"
+  display_name = "RAG Service Invoker"
   description  = "To authenticate private Cloud Run RAG service"
 }
 
