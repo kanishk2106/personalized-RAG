@@ -100,3 +100,6 @@ variable "pinecone_index" {
   type    = string
   default = "rag"
 }
+variable "rag_image_url" {
+  type = string
+}
