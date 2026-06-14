@@ -234,7 +234,7 @@ resource "google_cloud_run_v2_service" "embedding" {
   ]
 }
 resource "google_cloud_run_v2_service" "RAG_Generation" {
-  name                = "RAG-service"
+  name                = "rag-service"
   location            = var.region
   deletion_protection = true
 
