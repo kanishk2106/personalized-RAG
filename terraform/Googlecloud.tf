@@ -246,7 +246,7 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
       image = var.rag_image_url
 
       ports {
-        container_port = var.container_port
+        container_port = 8000
       }
 
       resources {
@@ -312,7 +312,7 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
         timeout_seconds   = 240
 
         tcp_socket {
-          port = var.container_port
+          port = 8000
         }
       }
     }
@@ -329,15 +329,11 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
   ]
 }
 
-resource "google_service_account" "rag_invoker" {
-  account_id   = "rag-invoker"
-  display_name = "RAG Service Invoker"
-  description  = "To authenticate private Cloud Run RAG service"
-}
-
 resource "google_cloud_run_v2_service_iam_member" "rag_access" {
   name     = google_cloud_run_v2_service.RAG_Generation.name
   location = google_cloud_run_v2_service.RAG_Generation.location
   role     = "roles/run.invoker"
-  member   = "serviceAccount:${google_service_account.rag_invoker.email}"
+  member   = "serviceAccount:rag-invoker@rag-chatbot-489922.iam.gserviceaccount.com"
+}
+
 }
