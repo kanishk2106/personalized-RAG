@@ -236,7 +236,7 @@ resource "google_cloud_run_v2_service" "embedding" {
 resource "google_cloud_run_v2_service" "RAG_Generation" {
   name                = "rag-service"
   location            = var.region
-  deletion_protection = true
+  deletion_protection = false
 
   template {
     service_account = var.service_account_email
