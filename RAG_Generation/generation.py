@@ -21,6 +21,7 @@ if not (MODAL_TOKEN_ID and MODAL_TOKEN_SECRET):
 _client = httpx.AsyncClient(
     base_url=VLLM_BASE_URL,
     timeout=httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=10.0),
+    follow_redirects=True,
     headers={
         "Modal-Key": MODAL_TOKEN_ID,
         "Modal-Secret": MODAL_TOKEN_SECRET,
