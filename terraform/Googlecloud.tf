@@ -328,10 +328,13 @@ resource "google_cloud_run_v2_service" "RAG_Generation" {
     google_project_service.secretmanager_api
   ]
 }
-
+resource "google_service_account" "rag_invoker" {
+  account_id   = "rag-invoker"
+  display_name = "RAG Service Invoker Account"
+}
 resource "google_cloud_run_v2_service_iam_member" "rag_access" {
   name     = google_cloud_run_v2_service.RAG_Generation.name
   location = google_cloud_run_v2_service.RAG_Generation.location
   role     = "roles/run.invoker"
-  member   = "serviceAccount:rag-invoker@rag-chatbot-489922.iam.gserviceaccount.com"
+  member   = "serviceAccount:${google_service_account.rag_invoker.email}"
 }
