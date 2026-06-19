@@ -1,14 +1,13 @@
 import modal
 import subprocess
-import time
 
 APP_NAME = "vllm-qwen3-v2"
 MODEL = "Qwen/Qwen3-8B"
-MAX_MODEL_LEN = 8192
+MAX_MODEL_LEN = 6096
 GPU = "A10G"
 VLLM_PORT = 8000
+MAX_NUM_SEQS = 16
 
-bench_volume = modal.Volume.from_name("bench-runs", create_if_missing=True)
 hf_cache = modal.Volume.from_name("hf-cache", create_if_missing=True)
 
 image = (
@@ -20,12 +19,10 @@ image = (
     .apt_install("git")
     .uv_pip_install(
         "vllm==0.21.0",
-        "nvidia-ml-py",
     )
     .env({
         "HF_XET_HIGH_PERFORMANCE": "1",
     })
-    .add_local_file("collectors/nvml_sampler.py", "/opt/nvml_sampler.py")
 )
 
 app = modal.App(APP_NAME)
@@ -35,27 +32,15 @@ app = modal.App(APP_NAME)
     image=image,
     gpu=GPU,
     volumes={
-        "/bench": bench_volume,
         "/root/.cache/huggingface": hf_cache,
     },
     timeout=60 * 60,
-    scaledown_window=60 * 30,
+    scaledown_window=60 * 10,
     max_containers=1,
 )
-@modal.concurrent(max_inputs=32)
-@modal.web_server(port=VLLM_PORT, startup_timeout=10 * 60)
+@modal.concurrent(max_inputs=MAX_NUM_SEQS)
+@modal.web_server(port=VLLM_PORT, startup_timeout=10 * 60, requires_proxy_auth=True)
 def serve():
-    container_run_id = f"container_{int(time.time())}"
-    subprocess.Popen(
-        [
-            "python", "/opt/nvml_sampler.py",
-            "--run-id", container_run_id,
-            "--out", "/bench/nvml.jsonl",
-            "--interval", "1.0",
-        ]
-    )
-    time.sleep(2)
-
     cmd = [
         "vllm", "serve", MODEL,
         "--served-model-name", "qwen3-8b-vllm",
@@ -63,7 +48,9 @@ def serve():
         "--port", str(VLLM_PORT),
         "--dtype", "bfloat16",
         "--max-model-len", str(MAX_MODEL_LEN),
+        "--kv-cache-dtype", "fp8",
         "--gpu-memory-utilization", "0.90",
+        "--max-num-seqs", str(MAX_NUM_SEQS),
         "--enforce-eager",
     ]
     subprocess.Popen(cmd)
