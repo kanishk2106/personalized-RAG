@@ -34,12 +34,15 @@ summary="""
 
 ### **Technical Skills**
 
-* **Languages:** Python, C (Unix API, threads, signals, IPC), SQL
-* **AI & LLMs:** Transformers, RAG, Agentic Workflows, LangChain, LangGraph, LlamaIndex, Prompt Engineering, LLM Evaluation, Embeddings
-* **ML Systems & Inference:** vLLM, PyTorch, CoreML, Quantization, Chroma, Pinecone, MLflow, LoRA, JIT tracing, scikit-learn, Hugging Face, FAISS
-* **Backend & API:** FastAPI, Pydantic, OpenAPI, REST API (timeouts/retries), API Integration, Redis, Kafka/SQS (async queues), PostgreSQL, SQLAlchemy
-* **Cloud & Infrastructure:** AWS (EKS, ECR, KMS), GCP (Cloud Run, Dataproc), Docker, Kubernetes, Terraform, Prometheus, Grafana, OpenTelemetry, GitHub Actions, Linux, Jenkins, pytest
-* **Distributed Computing & Data:** Apache Spark, PySpark, MinHash LSH, event-driven microservices, pandas
+Frameworks: Express.js (Node.js), FastAPI, React 18/19
+Backend: Pydantic, SQLAlchemy, OpenAPI, REST API, Server-Sent Events, OIDC, JWT
+Frontend: Vite, Tailwind CSS v4, JSX
+Languages: Python, TypeScript, JavaScript, SQL
+Database: PostgreSQL, SQLAlchemy, MongoDB Atlas, Pinecone
+Cloud: Docker, Jenkins, Terraform, Modal, AWS (ECR, IAM, KMS), GCP (Cloud Run, IAM, Secret Manager), Cloudflare (Workers, R2)
+Testing: Jest, Supertest, pytest
+AI: LangChain, LangGraph, RAG, vLLM, Gemini API, Hugging Face, PyTorch
+
 
 ---
 
@@ -56,12 +59,14 @@ summary="""
 * Designed and built distributed PySpark pipelines on GCP Dataproc to process 7M texts, partitioning workloads across Spark executors for large-scale data analysis of LLM hallucinations.
 * Applied embedding-based clustering with FAISS to analyze LLM hallucination patterns, successfully achieving 91% diversity and 15% sparsity.
 
-**Software Engineer (Machine Learning), Fidelity Information Services India** | Bengaluru, India | Jun 2022 – Aug 2024
+**Software Engineer, Fidelity Information Services India** | Bengaluru, India | Jun 2022 – Aug 2024
 
-* Integrated and optimized AI (FinBERT) inference paths into FastAPI-based backend services and product interfaces, maintaining p95 latency under 150ms in customer-facing ML pipelines.
-* Owned data-drift monitoring and led interface troubleshooting for customer-facing ML models utilizing Grafana and Prometheus, improving issue detection by 20%.
-* Automated CI/CD for ML services within Linux environments using Docker, Jenkins, and AWS ECR, accelerating deployment speed by 15%.
-* Secured ML model deployments with AWS IAM and KMS by collaborating directly with product teams to meet strict compliance requirements.
+* Owned the FinBERT sentiment inference layer in Python, integrating and optimizing inference paths into FastAPI backend services and customer-facing product interfaces while holding p95 latency under 150ms in production ML pipelines.
+* Delivered time-based sentiment analytics to credit analysts by architecting REST APIs in a Node.js (Express) service layer using TypeScript that aggregated per-article FinBERT scores into per-borrower trends, holding p95 latency under 300ms.
+* Designed a normalized PostgreSQL schema separating sentiment scores from article content to retain source text for audit, and optimized rolling-window aggregation query performance with composite indexing.
+* Owned data-drift monitoring and led interface troubleshooting for customer-facing ML models using Grafana and Prometheus, improving issue detection by 20%.
+* Built unit and integration test suites with Jest and Supertest covering aggregation logic, window-boundary, and empty-window cases, gated in a Docker/Jenkins/AWS ECR pipeline on Linux that cut build time 15% through layer caching.
+* Secured analyst access with JWT-based authentication (OIDC) via jwks-rsa enforcing RBAC so analysts could only retrieve authorized borrowers, and hardened deployments with AWS IAM roles and KMS encryption by collaborating directly with product teams to meet strict compliance requirements
 
 **Software Developer Intern, Vuram Technology Solutions** | Bengaluru, India | Aug 2021 – Feb 2022
 
@@ -77,14 +82,13 @@ summary="""
 
 ### **Projects & Open Source Contributions**
 
-**RAG Chatbot Pipeline** | *FastAPI, Pinecone, PostgreSQL, Terraform, vLLM, LangChain* | May 2025 - May 2026
+**RAG Chatbot Pipeline** | *React, Node.js(Express),FastAPI, Pinecone, PostgreSQL, Terraform, vLLM, LangChain* | May 2025 - May 2026
 
-* Designed an end-to-end RAG using Python, Cloudflare R2, FastAPI, and Pinecone to extract PDF content for LLM-based retrieval this is micro-services architecture contianing a multi-cloud RAG architecture using Cloudflare Queues and FastAPI microservices to process and store chunks in
-Postgres (SQLAlchemy ORM) and embeddings in Pinecone via Snowflake Arctic Embed S while automating the deployment with Terraform and CI/CD
-* Automated event-driven ETL and embedding workflows with Terraform, Cloudflare Queues/Workers, and Google Cloud Run to
-support scalable retrieval for RAG 
-* Optimized vLLM serving for Qwen3-8B on A10G GPU by analyzing NVML and Prometheus metrics to tune KV caching and
-achieve 3.5x faster workload completion and 45x faster Time To First Token (TTFT) for 16 concurrent requests
+* Designed an end-to-end, event-driven RAG microservices architecture across Cloudflare and GCP: Cloudflare Workers consume Queue messages triggered by R2 object-upload events, dispatching PDF extraction and embedding jobs to FastAPI (Python) services that store chunks in Neon Postgres (SQLAlchemy ORM) and embeddings in Pinecone via Snowflake Arctic Embed S.
+* Optimized vLLM serving for Qwen3-8B on an A10G GPU by analyzing NVML and Prometheus metrics to tune KV caching, achieving 3.5× faster workload completion and 45× faster Time To First Token at 16 concurrent requests.
+* Built a Node.js (Express) API layer in TypeScript on IAM-protected Google Cloud Run microservices, with a promise-based concurrency limiter (16 max in-flight, bounded queue) protecting the FastAPI vLLM inference service from overload.
+* Built a React 18 (Vite) chat interface streaming LLM tokens over Server-Sent Events, with AbortController-based cancellation of in-flight generations.
+* Provisioned the full stack with Terraform across GCP and Cloudflare providers — Cloud Run services, IAM bindings, and Secret Manager entries — with automated CI/CD for deployment.
 
 **On-Device ML Systems: Diffusion Model Compression & Hardware Export** | *PyTorch, CoreML, SSD-1B, LCM-LoRA* | March 2026
 
@@ -99,9 +103,9 @@ achieve 3.5x faster workload completion and 45x faster Time To First Token (TTFT
 
 **Aegis: AI Agent Governance Platform** | *Python SDK, FastAPI, MongoDB Atlas, React, Vercel, CrewAI* | Feb 2026
 
-* Built Python SDK and FastAPI backend for AI agent governance, enforcing tool-call guardrails and policy-based execution across
-agentic AI workflows
-* Implemented audit logging in MongoDB Atlas and created a React dashboard for real-time agentic workflow monitoringImplemented audit logging in MongoDB Atlas and created a React dashboard for real-time agentic workflow monitoring
+* Built a React 19 (Vite, Tailwind CSS v4) agent governance dashboard polling a REST API on a 2-second interval across 5 routed views: live audit feed, agent detail with kill-switch toggle, and human-in-the-loop approval queue.
+* Built a FastAPI backend enforcing a three-tier policy engine (ALLOW / BLOCK / REVIEW) with an immediate kill-switch pausing all actions for an agent, queried by the SDK on every call so policy changes apply in real time, backed by MongoDB Atlas.
+* Published a pip-installable Python SDK enforcing policy through @agent and @monitor decorators, validated against 4 LangChain and Gemini agents sharing 17 tools under differing policies. 
 
 **MetaAgent: Automated Meta-Tool Synthesis** | *Python, LangChain, LangGraph, Gemini API, MCP Server* | Dec 2025
 
