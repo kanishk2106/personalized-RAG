@@ -355,7 +355,9 @@ resource "google_cloud_run_v2_service" "app_server" {
     }
 
     containers {
-      image = var.app_server_image_url
+      # trimspace: values pasted into GitHub repo variables often carry a
+      # trailing newline, which makes the image reference unresolvable.
+      image = trimspace(var.app_server_image_url)
 
       ports {
         container_port = 8080
@@ -376,7 +378,7 @@ resource "google_cloud_run_v2_service" "app_server" {
 
       env {
         name  = "CORS_ORIGIN"
-        value = var.cors_origin
+        value = trimspace(var.cors_origin)
       }
 
       env {
