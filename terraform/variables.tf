@@ -103,3 +103,27 @@ variable "pinecone_index" {
 variable "rag_image_url" {
   type = string
 }
+
+variable "app_server_image_url" {
+  type = string
+}
+
+variable "cors_origin" {
+  type    = string
+  default = "http://localhost:5173"
+}
+
+variable "app_server_max_instances" {
+  type    = number
+  default = 5
+}
+
+variable "rate_limit_window_ms" {
+  type    = string
+  default = "60000"
+}
+
+variable "rate_limit_max" {
+  type    = string
+  default = "20"
+}

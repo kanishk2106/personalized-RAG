@@ -338,3 +338,72 @@ resource "google_cloud_run_v2_service_iam_member" "rag_access" {
   role     = "roles/run.invoker"
   member   = "serviceAccount:${google_service_account.rag_invoker.email}"
 }
+
+resource "google_cloud_run_v2_service" "app_server" {
+  name                = "rag-app-server"
+  location            = var.region
+  deletion_protection = false
+
+  template {
+    # Must be the invoker SA: it is the only member granted run.invoker on
+    # rag-service, and the Node proxy mints its ID token from this identity.
+    service_account = google_service_account.rag_invoker.email
+    timeout         = "${var.timeout_seconds}s"
+
+    scaling {
+      max_instance_count = var.app_server_max_instances
+    }
+
+    containers {
+      image = var.app_server_image_url
+
+      ports {
+        container_port = 8080
+      }
+
+      resources {
+        limits = {
+          cpu    = "1"
+          memory = "512Mi"
+        }
+      }
+
+      # Read straight off the RAG service so the URL is never copied by hand.
+      env {
+        name  = "RAG_SERVICE_URL"
+        value = google_cloud_run_v2_service.RAG_Generation.uri
+      }
+
+      env {
+        name  = "CORS_ORIGIN"
+        value = var.cors_origin
+      }
+
+      env {
+        name  = "RATE_LIMIT_WINDOW_MS"
+        value = var.rate_limit_window_ms
+      }
+
+      env {
+        name  = "RATE_LIMIT_MAX"
+        value = var.rate_limit_max
+      }
+    }
+  }
+
+  traffic {
+    percent = 100
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+  }
+
+  depends_on = [google_project_service.run_api]
+}
+
+# Browsers reach this service directly, so it is public. The RAG service behind
+# it stays private, reachable only via the invoker SA above.
+resource "google_cloud_run_v2_service_iam_member" "app_server_public" {
+  name     = google_cloud_run_v2_service.app_server.name
+  location = google_cloud_run_v2_service.app_server.location
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
