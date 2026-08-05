@@ -48,6 +48,8 @@ jobs:
       TF_VAR_embedding_image_url: ${{ vars.EMBEDDING_IMAGE_URL }}
       TF_VAR_rag_image_url: ${{ vars.RAG_IMAGE_URL }}
       TF_VAR_pinecone_index: ${{ vars.PINECONE_INDEX }}
+      TF_VAR_app_server_image_url: ${{ vars.APP_SERVER_IMAGE_URL }}
+      TF_VAR_cors_origin: ${{ vars.CORS_ORIGIN }}
 
     steps:
       - name: Checkout
