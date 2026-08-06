@@ -14,7 +14,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^8.6.2",
-    "google-auth-library": "^9.15.0"
+    "google-auth-library": "^9.15.0",
+    "promptpurify": "^0.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
