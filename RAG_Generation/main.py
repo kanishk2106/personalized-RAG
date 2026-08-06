@@ -11,6 +11,7 @@ from pinecone import Pinecone
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from .chat_log import log_chat
 from .embeddings import embed_query
 from .generation import aclose_client, stream_chat
 from .prompt import SYSTEM_PROMPT, build_user_message
@@ -80,6 +81,7 @@ async def chat(
     try:
         async with _Session() as session:
             top_chunks = await _retrieve_and_rerank(body.query,session)
+            await log_chat(session, body.query, [c.chunk_id for c in top_chunks])
     except Exception as db_err:
         print(f"Database Error: {db_err}")
         top_chunks=[]
