@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import re
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -20,7 +21,30 @@ from .retrieval import Candidate, hybrid_retrieve
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+def _async_database_url() -> str:
+    """Adapt the shared database-url secret for this service.
+
+    The secret holds a plain `postgresql://` URL so the Embedding service can
+    rewrite it to psycopg (see Embedding/database.py); here it needs the async
+    driver instead.
+
+    Two details this has to absorb, both of which fail at connect time rather
+    than at startup:
+      * a trailing newline on a hand-pasted secret makes the host unresolvable;
+      * asyncpg takes `ssl=`, not libpq's `sslmode=`/`channel_binding=`, which
+        is what Neon hands you.
+    """
+    raw = (os.getenv("DATABASE_URL") or "").strip()
+    if not raw:
+        raise RuntimeError("DATABASE_URL not set in environment")
+
+    raw = re.sub(r"^postgresql:", "postgresql+asyncpg:", raw)
+    raw = re.sub(r"([?&])sslmode=", r"\1ssl=", raw)
+    raw = re.sub(r"[?&]channel_binding=[^&]*", "", raw)
+    return raw.replace("?&", "?").rstrip("?&")
+
+
+DATABASE_URL = _async_database_url()
 PINECONE_API_KEY = os.environ["PINECONE_API_KEY"]
 PINECONE_INDEX = os.getenv("PINECONE_INDEX", "rag")
 RETRIEVE_K = int(os.environ.get("RETRIEVE_K", "20"))
