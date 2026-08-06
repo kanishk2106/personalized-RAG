@@ -123,7 +123,9 @@ variable "rate_limit_window_ms" {
   default = "60000"
 }
 
+# 40/min leaves headroom above the client's warmup retry rate (one attempt every
+# 3s = 20/min), so a retrying tab cannot exhaust its own budget during an outage.
 variable "rate_limit_max" {
   type    = string
-  default = "20"
+  default = "40"
 }
